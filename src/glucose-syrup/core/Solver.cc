@@ -1518,8 +1518,7 @@ lbool Solver::solve_(bool /*do_simp*/, bool /*turn_off_simp*/) // Parameters are
         ok = false;
 
 
-    if(status == l_Undef)
-        cancelUntil(0);
+    cancelUntil(0);
 
 
     double finalTime = cpuTime();

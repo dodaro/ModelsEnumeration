@@ -28,27 +28,18 @@ private:
     unsigned int numberOfModels;
     unsigned int maxModels;
     vec<bool> checked;
-    vec<bool> inAssumptions;
-    inline void popAssumption() { inAssumptions[var(assumptions.last())]=false; assumptions.pop(); }
-    inline void pushAssumption(Lit l) { inAssumptions[var(l)]=true; assumptions.push(l); }
-    bool resetAndCallSolver();
+    vec<int> inAssumptions;
+
+    inline bool isAssumption(Lit l) const { return inAssumptions[var(l)]!=-1; }
+    inline bool isChoice(Lit l) const { return reason(var(l)) == CRef_Undef; }
+    inline void popAssumption() { inAssumptions[var(assumptions.last())]=-1; assumptions.pop(); }
+    inline void pushAssumption(Lit l) { inAssumptions[var(l)]=assumptions.size(); assumptions.push(l); }
+    inline bool resetAndCallSolver() { budgetOff(); return solve_() == l_True; }  //search for a model under assumptions
+    int getBackjumpingLevel() const;
+    bool foundModel();
+    void flipLatestChoice();    
 
 public:
     inline EnumerationSolver() : Solver(), numberOfModels(0), maxModels(UINT_MAX) { setIncrementalMode(); }
-    inline int getLevel(Lit l) const { return level(var(l)); }
-    inline bool isChoiceNoAssum(Lit l) const { return !inAssumptions[var(l)] && reason(var(l)) == CRef_Undef; }
-    inline Lit createLitFromInt(int l) const { return l > 0 ? mkLit(l,false) : mkLit(-l,true); }
-    inline int createIntFromLit(Lit l) const { return sign(l) ? -var(l) : var(l); }
-
-    inline int getMaxLevelOfConflict() const {
-        int max=0;
-        for(int i=0; i < conflict.size(); i++)
-            if(getLevel(conflict[i]) > max)
-                max=getLevel(conflict[i]);
-        return max;
-    }
-
-    bool foundModel();
-    void flipLatestChoice();
     void enumerate();
 };

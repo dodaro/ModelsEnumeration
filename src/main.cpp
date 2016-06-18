@@ -16,23 +16,16 @@
 *
 */
 #include "EnumerationSolver.h"
+#include "glucose-syrup/core/Dimacs.h"
 
-int main()
+int main(int argc, char** argv)
 {
     EnumerationSolver s;
-    for(int i = 0; i < 3; i++)
-        s.newVar();
-
-    //add clause 0 v 1 v 2
-    vec<Lit> clause;
-    for(int i = 0; i < 3; i++)
-        clause.push(mkLit(i,false));
-
-    vec<Lit> clause2;
-    for(int i = 0; i < 3; i++)
-        clause2.push(mkLit(i,true));
-
-    s.addClause(clause);
-    s.addClause(clause2);
+    gzFile in = (argc == 1) ? gzdopen(0, "rb") : gzopen(argv[1], "rb");
+    if (in == NULL)
+        printf("ERROR! Could not open file: %s\n", argc == 1 ? "<stdin>" : argv[1]), exit(1);
+        
+    parse_DIMACS(in, s);
+    gzclose(in);
     s.enumerate();
 }
