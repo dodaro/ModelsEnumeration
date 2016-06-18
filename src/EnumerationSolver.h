@@ -42,4 +42,5 @@ private:
 public:
     inline EnumerationSolver() : Solver(), numberOfModels(0), maxModels(UINT_MAX) { setIncrementalMode(); }
     void enumerate();
+    inline void setMaxModels(unsigned int maxModels) { this->maxModels=maxModels; } //set the number of models to print
 };
