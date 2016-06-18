@@ -9,8 +9,8 @@ make
 ```
 Then, you can use either a file or stdin
 ```
-./build/release/enumerator dimacs.file
-./build/release/enumerator < dimacs.file
+./build/release/enumerator file.dimacs
+./build/release/enumerator < file.dimacs
 ```
 
 Usage in other projects
