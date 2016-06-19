@@ -1291,10 +1291,10 @@ lbool Solver::search(int /*nof_conflicts*/) {
                 var_decay += 0.01;
 
             if (verbosity >= 1 && conflicts % verbEveryConflicts == 0) {
-                printf("c | %8d   %7d    %5d | %7d %8d %8d | %5d %8d   %6d %8d | %6.3f %% |\n",
+/*                printf("c | %8d   %7d    %5d | %7d %8d %8d | %5d %8d   %6d %8d | %6.3f %% |\n",
                         (int) starts, (int) nbstopsrestarts, (int) (conflicts / starts),
                         (int) dec_vars - (trail_lim.size() == 0 ? trail.size() : trail_lim[0]), nClauses(), (int) clauses_literals,
-                        (int) nbReduceDB, nLearnts(), (int) nbDL2, (int) nbRemovedClauses, progressEstimate()*100);
+                        (int) nbReduceDB, nLearnts(), (int) nbDL2, (int) nbRemovedClauses, progressEstimate()*100);*/
             }
             if (decisionLevel() == 0) {
                 return l_False;

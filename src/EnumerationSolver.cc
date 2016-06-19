@@ -21,14 +21,14 @@
 using namespace std;
 
 bool EnumerationSolver::foundModel() {
-    cout << "c Answer: " << ++numberOfModels << endl;
-    if(verbosity>1) cout << "v";
+    if(verbosity>=1) cout << "c Answer: " << ++numberOfModels << endl;
+    if(verbosity>=2) cout << "v";
     for(int i=0; i<nVars(); i++) {
-        if(verbosity>1) cout << " " << (modelValue(i) == l_True ? "" : "-") << (i+1); //print
+        if(verbosity>=2) cout << " " << (modelValue(i) == l_True ? "" : "-") << (i+1); //print
         Lit l =(modelValue(i) == l_True ? mkLit(i,false) : mkLit(i,true));
         if(isChoice(l) && !isAssumption(l)) pushAssumption(l); //all choices that are not in the assumptions are added
     }
-    if(verbosity>1) cout << " 0" << endl;
+    if(verbosity>=2) cout << " 0" << endl;
     if( numberOfModels >= maxModels ) return false; //if the number of models to be printed is reached then stop
     return true;
 }
@@ -81,15 +81,15 @@ unsigned int EnumerationSolver::enumerate() {
 
 unsigned int EnumerationSolver::enumerateBlockingClause() {
     while(resetAndCallSolver()) {
-        cout << "c Answer: " << ++numberOfModels << endl;
-        if(verbosity>1) cout << "v";
+        if(verbosity>=1) cout << "c Answer: " << ++numberOfModels << endl;
+        if(verbosity>=2) cout << "v";
         vec<Lit> blockingClause;
         for(int i=0; i<nVars(); i++) {
-            if(verbosity>1) cout << " " << (modelValue(i) == l_True ? "" : "-") << (i+1); //print
+            if(verbosity>=2) cout << " " << (modelValue(i) == l_True ? "" : "-") << (i+1); //print
             Lit l =(modelValue(i) == l_True ? mkLit(i,false) : mkLit(i,true));
             if(isChoice(l)) blockingClause.push(~l); //all choices are added to the clause
         }
-        if(verbosity>1) cout << " 0" << endl;
+        if(verbosity>=2) cout << " 0" << endl;
         addClause(blockingClause);
         if( numberOfModels >= maxModels ) break; //if the number of models to be printed is reached then stop
     }
