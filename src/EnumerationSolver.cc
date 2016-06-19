@@ -22,13 +22,13 @@ using namespace std;
 
 bool EnumerationSolver::foundModel() {
     cout << "c Answer: " << ++numberOfModels << endl;
-    cout << "v";
+    if(verbosity>1) cout << "v";
     for(int i=0; i<nVars(); i++) {
-        cout << " " << (modelValue(i) == l_True ? "" : "-") << (i+1); //print
+        if(verbosity>1) cout << " " << (modelValue(i) == l_True ? "" : "-") << (i+1); //print
         Lit l =(modelValue(i) == l_True ? mkLit(i,false) : mkLit(i,true));
         if(isChoice(l) && !isAssumption(l)) pushAssumption(l); //all choices that are not in the assumptions are added
     }
-    cout << " 0" << endl;
+    if(verbosity>1) cout << " 0" << endl;
     if( numberOfModels >= maxModels ) return false; //if the number of models to be printed is reached then stop
     return true;
 }
@@ -59,7 +59,6 @@ int EnumerationSolver::getBackjumpingLevel() const {
 unsigned int EnumerationSolver::enumerate() {
     if(useBlockingClauses_) return enumerateBlockingClause();
 
-    cout << "QUI" << endl;
     assumptions.clear();
     while(checked.size() < nVars()) checked.push(false);     //init vector
     while(inAssumptions.size() < nVars()) inAssumptions.push(-1);     //init vector
@@ -83,14 +82,14 @@ unsigned int EnumerationSolver::enumerate() {
 unsigned int EnumerationSolver::enumerateBlockingClause() {
     while(resetAndCallSolver()) {
         cout << "c Answer: " << ++numberOfModels << endl;
-        cout << "v";
+        if(verbosity>1) cout << "v";
         vec<Lit> blockingClause;
         for(int i=0; i<nVars(); i++) {
-            cout << " " << (modelValue(i) == l_True ? "" : "-") << (i+1); //print
+            if(verbosity>1) cout << " " << (modelValue(i) == l_True ? "" : "-") << (i+1); //print
             Lit l =(modelValue(i) == l_True ? mkLit(i,false) : mkLit(i,true));
             if(isChoice(l)) blockingClause.push(~l); //all choices are added to the clause
         }
-        cout << " 0" << endl;
+        if(verbosity>1) cout << " 0" << endl;
         addClause(blockingClause);
         if( numberOfModels >= maxModels ) break; //if the number of models to be printed is reached then stop
     }
