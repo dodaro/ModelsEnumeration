@@ -27,6 +27,7 @@ class EnumerationSolver : public Solver
 private:
     unsigned int numberOfModels;
     unsigned int maxModels;
+    bool useBlockingClauses_;
     vec<bool> checked;
     vec<int> inAssumptions;
 
@@ -37,10 +38,15 @@ private:
     inline bool resetAndCallSolver() { budgetOff(); return solve_() == l_True; }  //search for a model under assumptions
     int getBackjumpingLevel() const;
     bool foundModel();
-    void flipLatestChoice();    
+    void flipLatestChoice();
+    unsigned int enumerateBlockingClause();
 
 public:
-    inline EnumerationSolver() : Solver(), numberOfModels(0), maxModels(UINT_MAX) { setIncrementalMode(); }
-    void enumerate();
+    inline EnumerationSolver() : Solver(), numberOfModels(0), maxModels(UINT_MAX), useBlockingClauses_(false) { setIncrementalMode(); }
+    virtual ~EnumerationSolver() {}
+    unsigned int enumerate();
     inline void setMaxModels(unsigned int maxModels) { this->maxModels=maxModels; } //set the number of models to print
+    inline void useBlockingClauses() { useBlockingClauses_ = true; }
 };
+
+

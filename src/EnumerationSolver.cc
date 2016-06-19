@@ -56,7 +56,10 @@ int EnumerationSolver::getBackjumpingLevel() const {
         return max;
 }
 
-void EnumerationSolver::enumerate() {
+unsigned int EnumerationSolver::enumerate() {
+    if(useBlockingClauses_) return enumerateBlockingClause();
+
+    cout << "QUI" << endl;
     assumptions.clear();
     while(checked.size() < nVars()) checked.push(false);     //init vector
     while(inAssumptions.size() < nVars()) inAssumptions.push(-1);     //init vector
@@ -64,12 +67,32 @@ void EnumerationSolver::enumerate() {
     begin:;
     if(!resetAndCallSolver()) {  //call the solver
         //incosistent
-        if(conflict.size()==0) return; //the conflict does not depend on the assumptions: stop.
+        if(conflict.size()==0) goto end; //the conflict does not depend on the assumptions: stop.
         int bl=getBackjumpingLevel(); //compute the meaningful level to backjump to
         while(assumptions.size()!=0 && assumptions.size() > bl) popAssumption(); //clear useless assumptions
     }
-    else if(!foundModel()) return; //print model and compute assumptions
+    else if(!foundModel()) goto end; //print model and compute assumptions
     flipLatestChoice(); //flip latest assumption
-    if(assumptions.size()==0) return; //no more assumptions: stop
+    if(assumptions.size()==0) goto end; //no more assumptions: stop
     goto begin; //repeat the search
+
+    end:;
+    return numberOfModels;
+}
+
+unsigned int EnumerationSolver::enumerateBlockingClause() {
+    while(resetAndCallSolver()) {
+        cout << "c Answer: " << ++numberOfModels << endl;
+        cout << "v";
+        vec<Lit> blockingClause;
+        for(int i=0; i<nVars(); i++) {
+            cout << " " << (modelValue(i) == l_True ? "" : "-") << (i+1); //print
+            Lit l =(modelValue(i) == l_True ? mkLit(i,false) : mkLit(i,true));
+            if(isChoice(l)) blockingClause.push(~l); //all choices are added to the clause
+        }
+        cout << " 0" << endl;
+        addClause(blockingClause);
+        if( numberOfModels >= maxModels ) break; //if the number of models to be printed is reached then stop
+    }
+    return numberOfModels;
 }
